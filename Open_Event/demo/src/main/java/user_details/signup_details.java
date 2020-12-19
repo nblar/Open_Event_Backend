@@ -5,12 +5,14 @@ import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.bouncycastle.util.encoders.Hex;
 
 public class signup_details {
+	
     String id;
     String FirstName;
     String LastName;
@@ -73,7 +75,9 @@ public class signup_details {
     	System.out.println(Address+" "+City+" "+Phone+" "+password);
     	String str="insert into user values (?,?,?,?,?,?,?,?)";
     	
-    	String str2="insert into login values(?,?)";
+    	String str2="insert into login values(?,?,?)";
+    	
+    	String str3="select count(*) from login";
     	
     	 try (
     			 Connection conn = DriverManager.getConnection(
@@ -82,6 +86,14 @@ public class signup_details {
                  
                    Statement stmt = conn.createStatement();
                  ){
+    		 
+    		 ResultSet rset=stmt.executeQuery(str3);
+    		 rset.next();
+    		 String res=rset.getString("count(*)");
+    		 Integer cnt= new Integer(res);
+    		 cnt++;
+    		 
+    		 
     		 PreparedStatement pre=conn.prepareStatement(str); 
     		 
     		 MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -89,8 +101,8 @@ public class signup_details {
     		   password.getBytes(StandardCharsets.UTF_8));
     		 String sha256hex = new String(Hex.encode(hash));
     		 
-    		 Integer i= new Integer(id);
-    		 pre.setInt(1, i);
+    		
+    		 pre.setInt(1, cnt);
     		 pre.setString(2, FirstName);
     		 pre.setString(3, LastName);
     		 pre.setString(4, Email);
@@ -101,8 +113,9 @@ public class signup_details {
     		 pre.execute(); 
     		 
     		PreparedStatement pre2=conn.prepareStatement(str2);
-    		pre2.setInt(1, i);
+    		pre2.setInt(1, cnt);
     		pre2.setString(2, sha256hex);
+    		pre2.setString(3, Email);
     		pre2.execute();
     		 
     		 System.out.println("Reached");
