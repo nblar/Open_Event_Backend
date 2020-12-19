@@ -31,11 +31,9 @@ public class login {
 		String str="select * from login";
 		
 		
-		String id_details=userDetails.getId();
+		String id_details=userDetails.getEmail();
 		String password=userDetails.getPassword();
 		
-		
-		Integer i= new Integer(id_details);
 		
 		try (
    			 Connection conn = DriverManager.getConnection(
@@ -53,7 +51,7 @@ public class login {
 			 
 			 while(rset.next())
 	    	  {   
-	    		  if((rset.getString("Id")).equalsIgnoreCase(id_details) && (rset.getString("Password")).equals(sha256hex))
+	    		  if((rset.getString("email")).equalsIgnoreCase(id_details) && (rset.getString("Password")).equals(sha256hex))
 	    		  { 
 	    			 return new ResponseEntity<>(null, HttpStatus.ACCEPTED); //code 202
 	    		  }
